@@ -39,27 +39,76 @@ def cria_estrutura(filtro: str = "") -> None:
           f"{sum(len(t.modulos) for t in CURRICULO)} módulos")
 
 
+# Um emoji por tema, so para navegacao visual do indice.
+EMOJI_TEMA = {
+    "01-estatistica": "📊",
+    "02-algebra-linear-e-otimizacao": "🔢",
+    "03-preparacao-de-dados": "🧹",
+    "04-aprendizado-supervisionado": "🎯",
+    "05-aprendizado-nao-supervisionado": "🔍",
+    "06-avaliacao-e-validacao": "⚖️",
+    "07-series-temporais": "📈",
+    "08-deep-learning": "🧠",
+    "09-nlp-e-llms": "💬",
+    "10-inferencia-causal": "🔗",
+    "11-interpretabilidade-e-fairness": "🔬",
+    "12-sistemas-de-recomendacao": "🛒",
+    "13-mlops-e-producao": "🚀",
+}
+
+CICLO = [
+    "```",
+    "   ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐",
+    "   │  📕  LEIA       │     │  💻  RODE       │     │  ✏️  RESOLVA    │",
+    "   │                 │ ──▶ │                 │ ──▶ │                 │",
+    "   │   teoria.pdf    │     │ notebooks-guia  │     │  99-exercicios  │",
+    "   └─────────────────┘     └─────────────────┘     └─────────────────┘",
+    "     entenda a ideia         mexa nos números        agora sem apoio",
+    "```",
+]
+
+
+def _celula(texto: str) -> str:
+    """Escapa o que quebraria uma celula de tabela markdown."""
+    return texto.replace("|", "\\|").replace("\n", " ")
+
+
 def _readme_tema(tema) -> None:
+    emoji = EMOJI_TEMA.get(tema.slug, "📁")
     linhas = [
-        f"# {tema.titulo}", "",
-        tema.resumo, "",
-        "| Módulo | Conteúdo | Teoria | Notebooks-guia | Prática |",
-        "|---|---|---|---|---|",
+        f"# {emoji} {tema.titulo}", "",
+        f"> {tema.resumo}", "",
+        f"**{len(tema.modulos)} módulos** · leia de cima para baixo — cada um "
+        "assume o anterior.", "",
+        "---", "",
+        "## 📚 Módulos deste tema", "",
+        "| # | Módulo | O que você vai aprender |",
+        "| :-: | :-- | :-- |",
     ]
+    for k, m in enumerate(tema.modulos, start=1):
+        linhas.append(f"| **{k}** | **[{m.titulo}]({m.slug}/teoria.pdf)** "
+                      f"| {_celula(m.resumo)} |")
+
+    linhas += ["", "---", "", "## 🗂️ Arquivos de cada módulo", "",
+               "| Módulo | 📕 Teoria | 💻 Notebooks-guia | ✏️ Prática |",
+               "| :-- | :-: | :-- | :-: |"]
     for m in tema.modulos:
-        pdf = f"[PDF]({m.slug}/teoria.pdf)"
         guias = [s for s, _ in m.notebooks if s != "99-exercicios"]
-        nbs = ", ".join(f"[{k+1}]({m.slug}/{s}.ipynb)" for k, s in enumerate(guias))
-        ex = f"[exercícios]({m.slug}/99-exercicios.ipynb)"
-        linhas.append(f"| **{m.titulo}** | {m.resumo} | {pdf} | {nbs} | {ex} |")
+        nbs = " · ".join(f"[{k + 1}]({m.slug}/{s}.ipynb)" for k, s in enumerate(guias))
+        linhas.append(
+            f"| {m.titulo} | [PDF]({m.slug}/teoria.pdf) | {nbs} "
+            f"| [abrir]({m.slug}/99-exercicios.ipynb) |")
+
     linhas += [
-        "", "---", "",
-        "Cada módulo tem um `teoria.pdf` (denso, com fórmulas e aplicações de "
-        "mercado), notebooks-guia executáveis e um notebook de **exercícios**. "
-        "Sugestão de uso: leia o PDF até o fim de um capítulo, rode o notebook-guia "
-        "correspondente mexendo nos parâmetros, e só então abra os exercícios — "
-        "eles são o único lugar onde o código é seu.", "",
-        "[← voltar ao índice geral](../README.md)", "",
+        "", "---", "", "## 🔄 Como estudar cada módulo", "", *CICLO, "",
+        "> 💡 Os notebooks-guia **já vêm com as saídas prontas** — dá para ler "
+        "sem rodar nada. Mas o material foi escrito para ser alterado: mude um "
+        "parâmetro, rode de novo, veja o que quebra.", "",
+        "> ✏️ O `99-exercicios` é o único lugar onde o código é seu. Cada "
+        "exercício tem o gabarito logo abaixo — resolva **antes** de rolar a "
+        "página, porque ler a solução dá a sensação de entender sem o "
+        "entendimento.", "",
+        "---", "", "[⬅️ Voltar para o índice geral](../README.md)", "",
     ]
     (RAIZ / tema.slug / "README.md").write_text("\n".join(linhas), encoding="utf-8")
 
@@ -68,34 +117,18 @@ def _readme_raiz() -> None:
     n_mod = sum(len(t.modulos) for t in CURRICULO)
     n_nb = sum(len(m.notebooks) for _, m in todos_os_modulos())
     linhas = [
-        "# Machine Learning & Deep Learning — Material do Curso", "",
-        "Material completo para formação de cientistas de dados, escrito para "
-        "quem tem **Python intermediário** e **estatística superficial**. Cada "
-        "conceito estatístico é construído do zero antes de ser usado.", "",
-        f"**{len(CURRICULO)} temas · {n_mod} módulos · {n_nb - n_mod} notebooks-guia "
-        f"· {n_mod} notebooks de exercícios**", "",
-        "## Como o material está organizado", "",
-        "```",
-        "<tema>/",
-        "  <módulo>/",
-        "    teoria.md      ← fonte do material teórico",
-        "    teoria.pdf     ← PDF denso: conceitos, fórmulas, aplicações reais",
-        "    NN-*.ipynb     ← notebooks-guia executáveis, muito comentados",
-        "    99-exercicios.ipynb  ← exercícios do módulo, com gabarito comentado",
-        "```", "",
-        "## Índice", "",
-    ]
-    for tema in CURRICULO:
-        linhas.append(f"### [{tema.titulo}]({tema.slug}/README.md)")
-        linhas.append("")
-        linhas.append(f"_{tema.resumo}_")
-        linhas.append("")
-        for m in tema.modulos:
-            linhas.append(
-                f"- **[{m.titulo}]({tema.slug}/{m.slug}/teoria.pdf)** — {m.resumo}")
-        linhas.append("")
-    linhas += [
-        "## Preparando o ambiente", "",
+        "# 📚 Machine Learning & Deep Learning", "",
+        "> Uma trilha de estudos completa para virar cientista de dados — da "
+        "primeira média aritmética até um modelo rodando em produção.", "",
+        f"### 🧭 {len(CURRICULO)} temas · {n_mod} módulos · "
+        f"{n_nb - n_mod} notebooks-guia · {n_mod} notebooks de exercícios", "",
+        "Escrito para quem tem **Python intermediário** e **estatística "
+        "superficial**. Nenhum conceito estatístico aparece sem ser construído "
+        "do zero antes — se você não sabe o que é um desvio-padrão, comece pelo "
+        "tema 1 e siga a ordem.", "",
+        "---", "",
+        "## 🚀 Comece por aqui", "",
+        "### 1️⃣ Prepare o ambiente (uma vez só)", "",
         "```bash",
         "python3 -m venv .venv",
         "source .venv/bin/activate",
@@ -104,18 +137,83 @@ def _readme_raiz() -> None:
         '    --display-name "Python (curso ML)"',
         "jupyter lab",
         "```", "",
-        "## Reconstruindo o material", "",
+        "### 2️⃣ Abra o primeiro módulo", "",
+        "```",
+        "01-estatistica/01-fundamentos-e-estatistica-descritiva/",
+        "```", "",
+        "### 3️⃣ Siga sempre o mesmo ciclo", "", *CICLO, "",
+        "---", "",
+        "## 🗂️ O que tem dentro de cada módulo", "",
+        "| Arquivo | O que é | Como usar |",
+        "| :-- | :-- | :-- |",
+        "| 📕 `teoria.pdf` | O material denso: conceitos, fórmulas, analogias e "
+        "aplicações reais de mercado. | Leia um capítulo por vez, sem pressa. |",
+        "| 💻 `01-*.ipynb`, `02-*.ipynb`… | Notebooks-guia, muito comentados e já "
+        "com as saídas embutidas. | Rode, mude os parâmetros, veja o que muda. |",
+        "| ✏️ `99-exercicios.ipynb` | Exercícios do módulo, com gabarito "
+        "comentado logo abaixo de cada um. | Resolva **antes** de olhar a "
+        "resposta. |",
+        "| 📝 `teoria.md` | A fonte de onde o PDF é gerado. | Só interessa se "
+        "você for editar o material. |",
+        "", "",
+        "> 💡 **Como saber se entendeu?** Se você consegue resolver o "
+        "`99-exercicios` sem olhar o gabarito, entendeu. Se não consegue, volte "
+        "ao PDF — não adianta seguir em frente, porque o próximo módulo assume "
+        "este.", "",
+        "> 🟢 🟡 🔴 Os exercícios são marcados por dificuldade: **base**, "
+        "**aplicação** e **síntese**. Se o tempo estiver curto, faça os 🟢 e 🟡 "
+        "de todos os módulos antes de voltar aos 🔴.", "",
+        "---", "",
+        "## 🗺️ A trilha completa", "",
+    ]
+    for i, tema in enumerate(CURRICULO, start=1):
+        emoji = EMOJI_TEMA.get(tema.slug, "📁")
+        linhas += [
+            f"### {emoji} {i}. {tema.titulo}", "",
+            f"> {tema.resumo}", "",
+            "| Módulo | O que você vai aprender |",
+            "| :-- | :-- |",
+        ]
+        for m in tema.modulos:
+            linhas.append(f"| **[{m.titulo}]({tema.slug}/{m.slug}/teoria.pdf)** "
+                          f"| {_celula(m.resumo)} |")
+        linhas += ["", f"📂 **[Abrir o tema completo]({tema.slug}/README.md)**", "",
+                   "---", ""]
+
+    linhas += [
+        "## 🛠️ Reconstruindo o material", "",
+        "Só é necessário se você for **editar** o conteúdo. Para estudar, basta "
+        "abrir os arquivos.", "",
         "```bash",
+        "python _ferramentas/build.py status      # o que já existe e o que falta",
         "python _ferramentas/build.py tudo        # estrutura + PDFs + notebooks",
         "python _ferramentas/build.py pdfs 01-estatistica   # só um tema",
-        "python _ferramentas/build.py status      # o que falta",
         "```", "",
-        "Os PDFs são gerados por uma toolchain própria (`_ferramentas/md2pdf.py`) "
-        "que usa ReportLab para o layout e o motor `mathtext` do Matplotlib para "
-        "renderizar as fórmulas — sem depender de LaTeX instalado.", "",
-        "Os notebooks são escritos como scripts em `_fontes/` (formato *percent*) "
-        "e só viram `.ipynb` **depois de executarem sem erro**, com as saídas "
-        "embutidas. Nenhum notebook do curso chega ao aluno quebrado.", "",
+        "### ⚙️ Como o material é construído", "",
+        "| Etapa | Ferramenta | Detalhe |",
+        "| :-- | :-- | :-- |",
+        "| Estrutura e índices | `_ferramentas/curriculo.py` | Fonte única de "
+        "verdade: temas, módulos e notebooks. |",
+        "| PDFs | `_ferramentas/md2pdf.py` | ReportLab para o layout e o motor "
+        "`mathtext` do Matplotlib para as fórmulas — **sem depender de LaTeX**. |",
+        "| Notebooks | `_ferramentas/py2nb.py` | Os notebooks são escritos como "
+        "scripts em `_fontes/` e só viram `.ipynb` **depois de executarem sem "
+        "erro**. Nenhum notebook chega quebrado. |",
+        "", "---", "",
+        "## ❓ Dúvidas frequentes", "",
+        "**Preciso saber matemática avançada?**  ",
+        "Não. Álgebra do ensino médio basta. O tema 2 constrói a álgebra linear "
+        "necessária a partir da geometria.", "",
+        "**Posso pular temas?**  ",
+        "Os temas 1 a 3 são pré-requisito de tudo. A partir do tema 4, dá para "
+        "escolher — mas Deep Learning (8) assume Otimização (2), e NLP (9) "
+        "assume Deep Learning.", "",
+        "**Os notebooks precisam ser executados?**  ",
+        "Não para ler: as saídas já vêm embutidas. Sim para aprender: o material "
+        "foi feito para ser alterado.", "",
+        "**Quanto tempo leva?**  ",
+        "Cada módulo tem entre 8 e 12 horas de leitura mais prática. São 54 "
+        "módulos — trate como uma maratona de meses, não um fim de semana.", "",
     ]
     (RAIZ / "README.md").write_text("\n".join(linhas), encoding="utf-8")
 
