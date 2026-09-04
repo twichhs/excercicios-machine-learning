@@ -1,0 +1,35 @@
+# Ambiente do curso de Machine Learning & Deep Learning
+# Testado com Python 3.12.
+#
+#   python3 -m venv .venv && source .venv/bin/activate
+#   pip install -r requirements.txt
+#   python -m ipykernel install --user --name curso-ml --display-name "Python (curso ML)"
+
+# --- núcleo científico -----------------------------------------------------
+numpy>=2.0
+pandas>=2.2
+scipy>=1.13
+matplotlib>=3.8
+seaborn>=0.13
+
+# --- modelagem estatística e machine learning ------------------------------
+scikit-learn>=1.5
+statsmodels>=0.14
+xgboost>=2.1
+lightgbm>=4.5
+shap>=0.46
+
+# --- deep learning (CPU) ---------------------------------------------------
+# Para a versão CPU, mais leve:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+torch>=2.4
+
+# --- ambiente de notebooks -------------------------------------------------
+jupyterlab>=4.2
+ipykernel>=6.29
+nbformat>=5.10
+nbclient>=0.10
+
+# --- geração do material (PDFs) --------------------------------------------
+reportlab>=4.2
+pillow>=10.0
