@@ -2,7 +2,7 @@
 
 Material completo para formação de cientistas de dados, escrito para quem tem **Python intermediário** e **estatística superficial**. Cada conceito estatístico é construído do zero antes de ser usado.
 
-**13 temas · 54 módulos · 142 notebooks**
+**13 temas · 54 módulos · 142 notebooks-guia · 54 notebooks de exercícios**
 
 ## Como o material está organizado
 
@@ -11,7 +11,8 @@ Material completo para formação de cientistas de dados, escrito para quem tem 
   <módulo>/
     teoria.md      ← fonte do material teórico
     teoria.pdf     ← PDF denso: conceitos, fórmulas, aplicações reais
-    *.ipynb        ← notebooks executáveis, muito comentados
+    NN-*.ipynb     ← notebooks-guia executáveis, muito comentados
+    99-exercicios.ipynb  ← exercícios do módulo, com gabarito comentado
 ```
 
 ## Índice

@@ -43,20 +43,22 @@ def _readme_tema(tema) -> None:
     linhas = [
         f"# {tema.titulo}", "",
         tema.resumo, "",
-        "| Módulo | Conteúdo | Teoria | Notebooks |",
-        "|---|---|---|---|",
+        "| Módulo | Conteúdo | Teoria | Notebooks-guia | Prática |",
+        "|---|---|---|---|---|",
     ]
     for m in tema.modulos:
         pdf = f"[PDF]({m.slug}/teoria.pdf)"
-        nbs = ", ".join(
-            f"[{k+1}]({m.slug}/{slug}.ipynb)" for k, (slug, _) in enumerate(m.notebooks))
-        linhas.append(f"| **{m.titulo}** | {m.resumo} | {pdf} | {nbs} |")
+        guias = [s for s, _ in m.notebooks if s != "99-exercicios"]
+        nbs = ", ".join(f"[{k+1}]({m.slug}/{s}.ipynb)" for k, s in enumerate(guias))
+        ex = f"[exercícios]({m.slug}/99-exercicios.ipynb)"
+        linhas.append(f"| **{m.titulo}** | {m.resumo} | {pdf} | {nbs} | {ex} |")
     linhas += [
         "", "---", "",
         "Cada módulo tem um `teoria.pdf` (denso, com fórmulas e aplicações de "
-        "mercado) e notebooks executáveis. Sugestão de uso: leia o PDF até o fim "
-        "de um capítulo, depois rode o notebook correspondente mexendo nos "
-        "parâmetros — o material foi escrito para ser alterado, não só lido.", "",
+        "mercado), notebooks-guia executáveis e um notebook de **exercícios**. "
+        "Sugestão de uso: leia o PDF até o fim de um capítulo, rode o notebook-guia "
+        "correspondente mexendo nos parâmetros, e só então abra os exercícios — "
+        "eles são o único lugar onde o código é seu.", "",
         "[← voltar ao índice geral](../README.md)", "",
     ]
     (RAIZ / tema.slug / "README.md").write_text("\n".join(linhas), encoding="utf-8")
@@ -70,14 +72,16 @@ def _readme_raiz() -> None:
         "Material completo para formação de cientistas de dados, escrito para "
         "quem tem **Python intermediário** e **estatística superficial**. Cada "
         "conceito estatístico é construído do zero antes de ser usado.", "",
-        f"**{len(CURRICULO)} temas · {n_mod} módulos · {n_nb} notebooks**", "",
+        f"**{len(CURRICULO)} temas · {n_mod} módulos · {n_nb - n_mod} notebooks-guia "
+        f"· {n_mod} notebooks de exercícios**", "",
         "## Como o material está organizado", "",
         "```",
         "<tema>/",
         "  <módulo>/",
         "    teoria.md      ← fonte do material teórico",
         "    teoria.pdf     ← PDF denso: conceitos, fórmulas, aplicações reais",
-        "    *.ipynb        ← notebooks executáveis, muito comentados",
+        "    NN-*.ipynb     ← notebooks-guia executáveis, muito comentados",
+        "    99-exercicios.ipynb  ← exercícios do módulo, com gabarito comentado",
         "```", "",
         "## Índice", "",
     ]

@@ -430,6 +430,18 @@ class Documento:
                 self._add_formula(crua.strip()[2:-2].strip())
                 i += 1
                 continue
+            # "$$formula..." aberta numa linha e fechada em outra
+            if crua.strip().startswith("$$"):
+                buf = [crua.strip()[2:]]
+                i += 1
+                while i < n and not self.linhas[i].strip().endswith("$$"):
+                    buf.append(self.linhas[i])
+                    i += 1
+                if i < n:
+                    buf.append(self.linhas[i].strip()[:-2])
+                    i += 1
+                self._add_formula(" ".join(x.strip() for x in buf).strip())
+                continue
 
             # titulos
             m = re.match(r"^(#{1,4})\s+(.*)$", crua)

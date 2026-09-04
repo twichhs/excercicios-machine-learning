@@ -9,6 +9,7 @@ Os campos de cada modulo:
     titulo     titulo humano, usado na capa do PDF e nos indices
     resumo     uma frase que aparece na capa do PDF e no README do tema
     notebooks  lista de (slug_do_notebook, titulo_do_notebook)
+               o notebook `99-exercicios` e anexado automaticamente a todos
 """
 from __future__ import annotations
 
@@ -428,6 +429,17 @@ CURRICULO: list[Tema] = [
                      ("02-politicas-de-retreino", "Políticas de retreino")]),
          ]),
 ]
+
+
+# --------------------------------------------------------------------------
+# Todo modulo termina com um notebook de EXERCICIOS: enunciados + espaco para
+# resolver + gabarito comentado no fim. E o unico notebook que o aluno escreve.
+EXERCICIOS = ("99-exercicios", "Exercícios")
+
+for _tema in CURRICULO:
+    for _modulo in _tema.modulos:
+        if EXERCICIOS not in _modulo.notebooks:
+            _modulo.notebooks.append(EXERCICIOS)
 
 
 def todos_os_modulos():
