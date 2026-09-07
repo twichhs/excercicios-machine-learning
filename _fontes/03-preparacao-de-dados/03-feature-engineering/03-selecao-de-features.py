@@ -126,7 +126,8 @@ from sklearn.linear_model import LogisticRegressionCV
 
 X_padronizado = StandardScaler().fit_transform(X)
 logistica_l1 = LogisticRegressionCV(
-    penalty="l1", solver="liblinear", Cs=15, cv=5, random_state=0, max_iter=2000,
+    l1_ratios=(1.0,), solver="liblinear", Cs=15, cv=5, random_state=0, max_iter=2000,
+    scoring="neg_log_loss", use_legacy_attributes=True,
 ).fit(X_padronizado, alvo)
 
 coeficientes_lasso = pd.Series(logistica_l1.coef_[0], index=X.columns).sort_values(
