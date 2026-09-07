@@ -6,7 +6,7 @@
 <!-- duracao: 6 a 8 horas (leitura + 2 notebooks) -->
 <!-- notebooks: 01-arvore-do-zero · 02-poda-e-hiperparametros · 99-exercicios -->
 <!-- autor: Material do curso de ML & DL -->
-<!-- versao: 1.0 -->
+<!-- versao: 1.1 -->
 
 # Árvores de Decisão
 
@@ -28,6 +28,14 @@ sempre, uma peça de um modelo maior (módulos 7 e 8), não o produto final.
 > problema começa quando o fluxograma fica tão detalhado e específico que
 > vira uma lista memorizada de casos individuais, em vez de um protocolo que
 > generaliza.
+
+A figura a seguir mostra a mesma árvore de duas formas: como fluxograma de
+perguntas (esquerda) e como a partição retangular que essas perguntas
+produzem no espaço de features (direita). São a mesma coisa vista de dois
+ângulos — cada nó da árvore é um corte reto, alinhado a um eixo, no espaço
+original.
+
+![A árvore (esquerda) e a partição retangular que ela produz no espaço de features (direita) são a mesma estrutura vista de dois ângulos.](figuras/arvore-e-particao.png)
 
 ### O que você vai conseguir fazer ao final
 
@@ -70,6 +78,27 @@ $$\text{Gini}(nó) = 1 - \sum_k p_k^2 \qquad
 > informação (tema 1) e é mais sensível a nós muito desbalanceados. Na
 > prática, árvores treinadas com um ou outro raramente diferem muito.
 
+### Um exemplo numérico: calculando Gini e o ganho de um corte
+
+Considere um nó com 100 clientes: 60 que renovaram a assinatura e 40 que
+cancelaram. $p_{renovou} = 0{,}6$, $p_{cancelou} = 0{,}4$:
+
+$$\text{Gini(pai)} = 1 - (0{,}6^2 + 0{,}4^2) = 1 - (0{,}36 + 0{,}16) = 0{,}48$$
+
+Suponha que o corte `tempo_de_uso > 6 meses` produza dois filhos: um com 70
+clientes (55 renovaram, 15 cancelaram) e outro com 30 clientes (5 renovaram,
+25 cancelaram):
+
+$$\text{Gini(filho 1)} = 1 - (0{,}786^2 + 0{,}214^2) \approx 0{,}337, \qquad
+\text{Gini(filho 2)} = 1 - (0{,}167^2 + 0{,}833^2) \approx 0{,}278$$
+
+$$\text{Ganho} = 0{,}48 - \left(\frac{70}{100} \times 0{,}337 + \frac{30}{100}
+\times 0{,}278\right) = 0{,}48 - 0{,}319 = 0{,}161$$
+
+Esse número (0,161) é comparado contra o ganho de **todos os outros cortes
+possíveis** (outras features, outros limiares) — o algoritmo escolhe sempre
+o corte de maior ganho.
+
 O **ganho de informação** de um corte é a redução ponderada de impureza:
 
 $$\text{Ganho} = \text{Impureza(pai)} - \sum_{filho} \frac{n_{filho}}{n_{pai}} \text{Impureza(filho)}$$
@@ -90,6 +119,14 @@ O algoritmo escolhe, em cada nó, o corte que maximiza esse ganho.
 > treino em vez de aprender um padrão generalizável. Esse é o comportamento
 > **padrão**, não uma falha rara — árvores sem restrição de crescimento
 > sobreajustam quase sempre.
+
+A figura a seguir mostra três profundidades no mesmo dataset: profundidade
+2 mal captura a curvatura real da fronteira (poucas folhas, viés alto);
+sem limite, a árvore cria dezenas de folhas minúsculas, algumas para
+isolar um único ponto de ruído — visível nos "dedos" estreitos da fronteira
+à direita.
+
+![Profundidade pequena não captura a curvatura real (viés); sem limite, a árvore cria folhas minúsculas para isolar pontos individuais, inclusive ruído (variância).](figuras/overfitting-profundidade.png)
 
 ### Pré-poda: limitar o crescimento
 
@@ -115,7 +152,10 @@ Cada corte compara uma única feature contra um limiar — a operação é
 invariante a qualquer transformação **monotônica** daquela feature
 (multiplicar por uma constante positiva, aplicar log). Isso é uma vantagem
 prática real: nenhum dos cuidados de escalonamento dos módulos anteriores
-(regressão, k-NN, SVM) se aplica a árvores.
+(regressão, k-NN, SVM) se aplica a árvores. Um analista pode alimentar a
+árvore com `renda` em reais ou em milhares de reais — a estrutura da árvore
+(quais features, em qual ordem, quais limiares relativos) não muda em nada,
+só o número exibido no limiar.
 
 > [!ARMADILHA] Isso não significa que árvores são imunes a todo problema de
 > feature engineering. Cardinalidade alta ainda pode inflar artificialmente
@@ -138,7 +178,12 @@ prática real: nenhum dos cuidados de escalonamento dos módulos anteriores
 > a média de muitas árvores instáveis, treinadas em variações dos dados,
 > produz um modelo muito mais estável que qualquer árvore individual.** Uma
 > árvore sozinha raramente é o modelo final em produção — ela é o
-> "aprendiz fraco" que ensembles (módulos 7 e 8) combinam.
+> "aprendiz fraco" que ensembles (módulos 7 e 8) combinam. Um caso comum:
+> um analista treina uma árvore de decisão para explicar rotatividade de
+> funcionários, apresenta a árvore para a diretoria como "a explicação",
+> e no mês seguinte, com mais uma leva de dados, a árvore muda de estrutura
+> completamente — não porque o fenômeno mudou, mas porque a árvore sempre
+> teve essa instabilidade inerente.
 
 ## Erros que custam caro — checklist
 

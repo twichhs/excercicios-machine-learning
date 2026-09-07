@@ -6,7 +6,7 @@
 <!-- duracao: 8 a 10 horas (leitura + 3 notebooks) -->
 <!-- notebooks: 01-gradient-boosting-do-zero · 02-xgboost-e-lightgbm · 03-tuning-e-early-stopping · 99-exercicios -->
 <!-- autor: Material do curso de ML & DL -->
-<!-- versao: 1.0 -->
+<!-- versao: 1.1 -->
 
 # Boosting: Gradient Boosting, XGBoost e LightGBM
 
@@ -30,6 +30,13 @@ competições e aplicações de mercado.
 > errou** e tenta corrigi-los, o terceiro foca no que os dois primeiros
 > ainda erram juntos, e assim por diante. Cada novo participante tem uma
 > tarefa cada vez mais específica: consertar o que sobrou.
+
+A figura a seguir mostra essa ideia num problema de regressão simples: com
+apenas 1 árvore, o "ensemble" é quase uma reta grosseira; com 5, já capta a
+forma geral da curva; com 20 e 100, o ajuste refina cada vez mais os
+detalhes que as árvores anteriores ainda erravam.
+
+![A soma de árvores rasas se aproxima gradualmente da função real: cada nova árvore corrige o que a soma anterior ainda erra.](figuras/ajuste-sequencial.png)
 
 ### O que você vai conseguir fazer ao final
 
@@ -72,6 +79,26 @@ aprendizado. O algoritmo:
 > boosting" não é uma metáfora — é gradiente descendente, aplicado a um
 > objeto matemático diferente (uma função, não um vetor de números).
 
+### Um exemplo numérico: as duas primeiras rodadas, na mão
+
+Considere 4 exemplos com alvo $y = [10, 12, 20, 22]$. $F_0$ começa como a
+média: $F_0(x) = 16$ para todos. Os resíduos (gradiente negativo, para erro
+quadrático) da rodada 1 são $y - F_0 = [-6, -4, 4, 6]$.
+
+Uma árvore rasa $h_1$ é treinada para prever **esses resíduos** — por
+exemplo, aprendendo a distinguir os dois primeiros exemplos (resíduo médio
+$-5$) dos dois últimos (resíduo médio $+5$). Com $\eta = 0{,}3$:
+
+$$F_1(x) = F_0(x) + 0{,}3 \times h_1(x)$$
+
+Para os dois primeiros exemplos, $F_1 = 16 + 0{,}3 \times (-5) = 14{,}5$; para
+os dois últimos, $F_1 = 16 + 0{,}3 \times 5 = 17{,}5$. O erro caiu (de
+$|10-16|=6$ para $|10-14{,}5|=4{,}5$), mas não foi eliminado de propósito —
+$\eta=0{,}3$ garante que **cada rodada dá só um passo parcial**, deixando
+erro suficiente para as próximas árvores continuarem corrigindo. Repetir
+esse processo dezenas ou centenas de vezes é exatamente o que a figura
+anterior ilustra visualmente.
+
 > [!NOTA] Para erro quadrático, o gradiente negativo **é** o resíduo
 > $(y - F_{m-1}(x))$ — daí a intuição popular de "cada árvore aprende o erro
 > da anterior". Para outras funções de perda (entropia cruzada, por
@@ -87,12 +114,37 @@ aprendizado. O algoritmo:
 > $\eta$ pequeno + $M$ grande, com early stopping (adiante) para decidir o
 > $M$ real, é a prática padrão de mercado.
 
+A figura abaixo mostra esse trade-off diretamente: com $\eta=0{,}5$
+(vermelho), a perda de validação já começa a piorar antes da rodada 20 —
+o passo é grande demais e o modelo overfita rápido. Com $\eta=0{,}1$
+(azul), o modelo tem uma janela maior de rodadas úteis antes de overfitar.
+Com $\eta=0{,}02$ (verde), o modelo permanece estável por todas as 400
+rodadas simuladas, sem sinal de overfitting.
+
+![Taxa de aprendizado grande converge rápido mas overfita cedo; taxa pequena precisa de mais árvores, mas permanece estável por muito mais rodadas.](figuras/efeito-taxa-aprendizado.png)
+
 > [!ARMADILHA] Ao contrário de Random Forest, onde adicionar mais árvores
 > **quase nunca piora** o resultado, em boosting **adicionar árvores demais
 > causa overfitting real** — cada nova árvore continua tentando reduzir o
 > erro de treino, eventualmente decorando ruído. Controlar $M$ (ou usar
 > early stopping) não é opcional em boosting da forma que é dispensável em
 > Random Forest.
+
+A figura a seguir mostra esse fenômeno de forma isolada: a perda de treino
+(azul) cai monotonicamente até quase zero, sem nunca "perceber" que está
+decorando ruído — mas a perda de validação (vermelho) atinge um mínimo por
+volta da rodada 24 e depois **piora continuamente** conforme o modelo
+continua ajustando os últimos resíduos, que a essa altura já são, em boa
+parte, ruído do conjunto de treino.
+
+![Sem early stopping, a perda de treino cai indefinidamente — mas a perda de validação atinge um mínimo e depois piora: o sintoma clássico de overfitting em boosting.](figuras/overfitting-sem-early-stopping.png)
+
+> [!MERCADO] Um erro de mercado recorrente: um time treina um modelo de
+> XGBoost com `n_estimators=1000` fixo (sem early stopping), obtém AUC alto
+> no treino, e é surpreendido por desempenho ruim em produção. O diagnóstico
+> quase sempre é este gráfico — a validação já tinha atingido seu melhor
+> ponto centenas de rodadas antes, e o modelo em produção é a versão
+> **overfitada**, não a versão ótima que existiu no meio do caminho.
 
 ## XGBoost e LightGBM: os avanços de engenharia
 
@@ -125,7 +177,11 @@ overfitting sem cuidados extras. XGBoost e LightGBM adicionam:
 > [!MERCADO] As duas bibliotecas também lidam **nativamente** com valores
 > faltantes (aprendendo, durante o treino, para que lado do corte um valor
 > ausente deveria ir) — uma vantagem prática real sobre a exigência de
-> imputação explícita (tema 3) que outros modelos deste tema têm.
+> imputação explícita (tema 3) que outros modelos deste tema têm. Em um
+> pipeline real de crédito ou fraude, onde é comum ter 10-20% de valores
+> ausentes em algumas features (histórico de conta nova, por exemplo), essa
+> capacidade evita uma etapa inteira de imputação que, mal feita, poderia
+> introduzir viés (tema 3, módulo 2).
 
 ## Early stopping: decidir M sem vazar o teste
 
@@ -140,7 +196,7 @@ overfitting sem cuidados extras. XGBoost e LightGBM adicionam:
 ## Erros que custam caro — checklist
 
 - Treinar um número fixo e grande de árvores sem early stopping,
-  arriscando overfitting silencioso.
+  arriscando overfitting silencioso (veja a figura da seção anterior).
 - Usar taxa de aprendizado alta (`learning_rate` próximo de 1) esperando
   convergência rápida — o resultado costuma ser instável e pior.
 - Usar o conjunto de teste final para decidir quando parar (early

@@ -6,7 +6,7 @@
 <!-- duracao: 8 a 10 horas (leitura + 2 notebooks) -->
 <!-- notebooks: 01-margem-e-svm-linear · 02-kernels · 99-exercicios -->
 <!-- autor: Material do curso de ML & DL -->
-<!-- versao: 1.0 -->
+<!-- versao: 1.1 -->
 
 # Máquinas de Vetores de Suporte
 
@@ -27,6 +27,13 @@ ferramentas mais poderosas do aprendizado supervisionado: o truque do kernel.
 > mais **larga** possível — a que deixa o maior respiro até a casa mais
 > próxima de cada lado. Essa é literalmente a otimização que a SVM resolve:
 > maximizar a largura da "estrada" (a margem) entre as classes.
+
+A figura a seguir mostra essa "estrada" literalmente: a faixa sombreada é a
+margem, a linha central é a fronteira de decisão, e os dois pontos
+destacados — um de cada classe — são os únicos que realmente importam para
+essa geometria: os **vetores de suporte**.
+
+![A margem máxima é a "estrada" mais larga entre as classes. Só os pontos exatamente sobre a margem (círculos) — os vetores de suporte — determinam a fronteira.](figuras/margem-maxima.png)
 
 ### O que você vai conseguir fazer ao final
 
@@ -62,7 +69,11 @@ com garantia de mínimo global.
 > [!MERCADO] Essa esparsidade tem uma consequência prática direta: um
 > modelo SVM treinado pode ser resumido por um pequeno subconjunto de
 > pontos (os vetores de suporte), diferentemente de k-NN (módulo anterior),
-> que precisa do dataset de treino inteiro para prever.
+> que precisa do dataset de treino inteiro para prever. Em bioinformática,
+> onde um problema típico tem $n=200$ pacientes e $p=15\,000$ genes, essa
+> esparsidade é uma das razões pelas quais SVM ainda é competitivo: o
+> modelo final pode depender de apenas 20-30 pacientes "de fronteira",
+> tornando-o mais barato de armazenar e mais fácil de auditar caso a caso.
 
 ## Margem suave: quando os dados não são perfeitamente separáveis
 
@@ -81,6 +92,13 @@ y_i(w^\top x_i + b) \geq 1 - \xi_i, \;\; \xi_i \geq 0$$
 >   viés, menos variância, fronteira mais suave.
 > - $C$ **grande**: prioriza classificar cada ponto de treino corretamente,
 >   tolera pouca violação — menos viés, mais variância, risco de overfitting.
+
+A figura abaixo mostra o mesmo par de classes (com alguma sobreposição real)
+ajustado com três valores de $C$. Repare como o número de vetores de suporte
+cai conforme $C$ cresce — menos pontos "sobre a margem", mais pontos
+classificados com folga.
+
+![C pequeno produz uma margem larga com muitos vetores de suporte (tolera violações); C grande produz uma margem estreita, ajustando-se mais de perto ao treino.](figuras/efeito-de-c.png)
 
 > [!ARMADILHA] $C \to \infty$ recupera a margem rígida — e se os dados não
 > forem de fato separáveis, o problema de otimização não tem solução
@@ -104,6 +122,14 @@ propriedade é o que torna o truque do kernel possível.
 > calcular $\phi$ explicitamente**, todo o problema (que só usa produtos
 > internos) pode ser resolvido usando $K$ diretamente.
 
+O exemplo clássico que prova o ponto: dois círculos concêntricos (a classe
+interna e a classe externa) não têm **nenhuma** reta que os separe — mas
+projetados num espaço com mais uma dimensão (por exemplo, a distância ao
+centro), viram perfeitamente separáveis por um plano. O kernel RBF alcança
+esse mesmo efeito sem nunca construir essa dimensão extra explicitamente.
+
+![Círculos concêntricos não são separáveis por nenhuma reta (esquerda) — mas o kernel RBF encontra a fronteira circular perfeitamente (direita), sem nunca calcular features explícitas.](figuras/kernel-trick.png)
+
 ### Os kernels mais usados
 
 | Kernel | Fórmula | Intuição |
@@ -125,12 +151,25 @@ propriedade é o que torna o truque do kernel possível.
 > ajustados **juntos** por validação cruzada (tema 6) — otimizar um sem o
 > outro raramente encontra o melhor par.
 
+> [!MERCADO] Um caso de mercado típico de kernel polinomial: um sistema de
+> recomendação simples que usa SVM sobre features de interação
+> usuário-produto — o grau $d=2$ captura automaticamente termos como
+> "idade × categoria do produto", sem que ninguém precise construir essas
+> interações manualmente (tema 3, módulo 3). Na prática, porém, RBF costuma
+> ser preferido por sua flexibilidade e menor número de hiperparâmetros a
+> ajustar ($\gamma$ e $C$, contra $d$, $c$ e $C$ do polinomial).
+
 ## Por que escalonar é, de novo, obrigatório
 
 SVM depende de produtos internos e distâncias — a mesma vulnerabilidade a
 escalas diferentes já vista em k-NN e em qualquer método baseado em distância
 (temas 2 e 3). Sem padronizar, features de maior escala numérica dominam o
-kernel inteiro, independente de sua real importância.
+kernel inteiro, independente de sua real importância. Num caso real de
+scoring de crédito, uma feature `renda_anual` (na casa das dezenas de
+milhares) ao lado de `numero_dependentes` (0 a 5) faz o kernel RBF, sem
+padronização, tratar `numero_dependentes` como praticamente irrelevante —
+qualquer distância entre dois clientes é dominada pela diferença de renda,
+não importa quão parecidos sejam em outras dimensões.
 
 ## Erros que custam caro — checklist
 

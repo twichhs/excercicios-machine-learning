@@ -21,6 +21,12 @@ Sintaxe Markdown suportada (subconjunto deliberadamente pequeno e previsivel):
   ---                           -> linha horizontal
   > [!NOTA] / [!MERCADO] / [!ARMADILHA] / [!ANALOGIA] / [!FORMULA]
                                 -> caixas de destaque coloridas
+  ![legenda](caminho.png)       -> figura raster (PNG), centralizada e
+                                   reduzida para caber na largura da pagina,
+                                   com a legenda em italico logo abaixo.
+                                   O caminho e relativo ao proprio teoria.md
+                                   (ex.: figuras/curva-sigmoide.png). Falha
+                                   alto e claro se o arquivo nao existir.
 
 IMPORTANTE sobre as formulas: o `mathtext` aceita um subconjunto amplo do
 LaTeX -- \\frac, \\sum, \\prod, \\int, \\sqrt, \\binom, \\text, \\operatorname,
@@ -378,6 +384,27 @@ class ImagemFormula(RLImage):
         self.hAlign = "CENTER"
 
 
+class ImagemArquivo(RLImage):
+    """Figura raster (PNG) do disco, centralizada e reduzida para caber na
+    largura útil da página. Assume a resolucao gravada no arquivo (DPI); se
+    ausente, usa 150 DPI -- a resolucao padrao dos scripts de geracao de
+    figuras deste curso."""
+
+    def __init__(self, caminho: str, largura_max_fracao: float = 1.0):
+        with Image.open(caminho) as img:
+            larg_px, alt_px = img.size
+            dpi = img.info.get("dpi", (150, 150))
+        dpi_x = dpi[0] if dpi and dpi[0] else 150
+        escala = 72.0 / dpi_x
+        larg, alt = larg_px * escala, alt_px * escala
+        maxw = LARGURA_UTIL * largura_max_fracao
+        if larg > maxw:
+            alt *= maxw / larg
+            larg = maxw
+        super().__init__(caminho, width=larg, height=alt)
+        self.hAlign = "CENTER"
+
+
 # --------------------------------------------------------------------------
 # Parser de blocos
 # --------------------------------------------------------------------------
@@ -479,6 +506,13 @@ class Documento:
                 i += 1
                 continue
 
+            # imagem: ![legenda](caminho/para/arquivo.png)
+            m_img = re.match(r"^!\[(.*?)\]\((.*?)\)\s*$", crua)
+            if m_img:
+                self._add_imagem(m_img.group(2).strip(), m_img.group(1).strip())
+                i += 1
+                continue
+
             # tabela
             if crua.lstrip().startswith("|") and i + 1 < n and \
                     re.match(r"^\s*\|[\s:|-]+\|\s*$", self.linhas[i + 1]):
@@ -556,6 +590,23 @@ class Documento:
         self.flow.append(ImagemFormula(latex))
         self.flow.append(Spacer(1, 8))
 
+    def _add_imagem(self, caminho: str, legenda: str) -> None:
+        caminho_resolvido = Path(caminho)
+        if not caminho_resolvido.is_absolute():
+            base = Path(self.origem)
+            base_dir = base.parent if base.suffix else Path(".")
+            caminho_resolvido = (base_dir / caminho_resolvido).resolve()
+        if not caminho_resolvido.exists():
+            raise FileNotFoundError(
+                f"imagem referenciada nao encontrada: {caminho_resolvido} "
+                f"(referenciada como '{caminho}' em {self.origem})")
+        self.flow.append(Spacer(1, 6))
+        self.flow.append(KeepTogether([
+            ImagemArquivo(str(caminho_resolvido)),
+            self._p(legenda, "legenda") if legenda else Spacer(1, 0),
+        ]))
+        self.flow.append(Spacer(1, 10))
+
     def _add_codigo(self, codigo: str, lang: str) -> None:
         codigo = codigo.rstrip("\n")
         linhas = [
@@ -580,19 +631,62 @@ class Documento:
             conteudo.append(Paragraph(
                 rotulo.upper(),
                 ParagraphStyle("ct", parent=E["caixa_titulo"], textColor=cor)))
-        # agrupa em paragrafos separados por linha em branco
+
+        # agrupa em paragrafos separados por linha em branco -- mas uma
+        # formula em DISPLAY ($$...$$, sozinha na linha ou em bloco de varias
+        # linhas) vira uma ImagemFormula, nao texto de paragrafo. Sem isso,
+        # "$$...$$" dentro de uma caixa aparece como texto literal: o parser
+        # inline (formata_inline) so reconhece "$formula$" de uma cifra.
         bloco: list[str] = []
-        for ln in linhas + [""]:
-            if ln.strip():
-                bloco.append(ln.strip())
-            elif bloco:
+
+        def fecha_bloco():
+            if bloco:
                 conteudo.append(self._p(" ".join(bloco), "caixa"))
-                bloco = []
+                bloco.clear()
+
+        j, m_linhas = 0, len(linhas)
+        while j < m_linhas:
+            ln_bruta = linhas[j]
+            ln = ln_bruta.strip()
+            if not ln:
+                fecha_bloco()
+            elif ln == "$$":
+                fecha_bloco()
+                j += 1
+                buf_formula = []
+                while j < m_linhas and linhas[j].strip() != "$$":
+                    buf_formula.append(linhas[j].strip())
+                    j += 1
+                conteudo.append(ImagemFormula(" ".join(buf_formula), tamanho_pt=12.5))
+            elif ln.startswith("$$") and ln.endswith("$$") and len(ln) > 4:
+                fecha_bloco()
+                conteudo.append(ImagemFormula(ln[2:-2].strip(), tamanho_pt=12.5))
+            elif re.match(r"^\s*(?:[-*+]|\d+\.)\s+", ln_bruta):
+                # lista dentro da caixa -- sem isso, "- item" aparece como
+                # texto literal (formata_inline nao entende marcadores de lista)
+                fecha_bloco()
+                buf_lista = [ln_bruta]
+                j += 1
+                while j < m_linhas and linhas[j].strip() and (
+                        re.match(r"^\s*(?:[-*+]|\d+\.)\s+", linhas[j])
+                        or re.match(r"^\s+\S", linhas[j])):
+                    buf_lista.append(linhas[j])
+                    j += 1
+                conteudo.append(self._constroi_lista(buf_lista))
+                continue
+            else:
+                bloco.append(ln)
+            j += 1
+        fecha_bloco()
+
         self.flow.append(Spacer(1, 3))
         self.flow.append(_bloco_colorido(conteudo, fundo, cor))
         self.flow.append(Spacer(1, 9))
 
-    def _add_lista(self, linhas: list[str]) -> None:
+    def _constroi_lista(self, linhas: list[str]) -> ListFlowable:
+        """Monta o flowable de uma lista a partir das linhas brutas (sem o
+        prefixo '- '/'1. '). Compartilhado entre listas soltas no corpo do
+        texto e listas dentro de uma caixa de destaque."""
         itens, atual, ordenada = [], None, False
         for ln in linhas:
             m = re.match(r"^(\s*)(?:([-*+])|(\d+)\.)\s+(.*)$", ln)
@@ -608,11 +702,14 @@ class Documento:
         flow_itens = [ListItem(self._p(t, "item"), leftIndent=14,
                                value=k + 1 if ordenada else None)
                       for k, t in enumerate(itens)]
-        self.flow.append(ListFlowable(
+        return ListFlowable(
             flow_itens, bulletType="1" if ordenada else "bullet",
             bulletFontName="DejaVu", bulletFontSize=9,
             bulletColor=AZUL, leftIndent=16, spaceBefore=2, spaceAfter=8,
-            start=1 if ordenada else None))
+            start=1 if ordenada else None)
+
+    def _add_lista(self, linhas: list[str]) -> None:
+        self.flow.append(self._constroi_lista(linhas))
 
     def _add_tabela(self, linhas: list[str]) -> None:
         def celulas(ln: str) -> list[str]:

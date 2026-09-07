@@ -103,8 +103,8 @@ ordem, incluindo o gradiente descendente.
 
 | Função | Gradiente | Onde aparece |
 |---|---|---|
-| $f(\beta) = \|X\beta - y\|^2$ | $\nabla f = 2X^\top(X\beta - y)$ | mínimos quadrados |
-| $f(w) = \frac{1}{2}\|w\|^2$ | $\nabla f = w$ | regularização L2 (Ridge) |
+| $f(\beta) = \lVert X\beta - y \rVert^2$ | $\nabla f = 2X^\top(X\beta - y)$ | mínimos quadrados |
+| $f(w) = \frac{1}{2}\lVert w \rVert^2$ | $\nabla f = w$ | regularização L2 (Ridge) |
 | $f(w) = -\sum_i [y_i \log \hat y_i + (1-y_i)\log(1-\hat y_i)]$ | envolve $\hat y_i - y_i$ | entropia cruzada, regressão logística |
 
 > [!MERCADO] O gradiente da soma de quadrados, $2X^\top(X\beta - y)$, é a razão

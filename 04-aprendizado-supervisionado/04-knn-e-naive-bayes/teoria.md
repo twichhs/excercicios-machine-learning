@@ -6,7 +6,7 @@
 <!-- duracao: 6 a 8 horas (leitura + 2 notebooks) -->
 <!-- notebooks: 01-knn · 02-naive-bayes · 99-exercicios -->
 <!-- autor: Material do curso de ML & DL -->
-<!-- versao: 1.0 -->
+<!-- versao: 1.1 -->
 
 # k-NN e Naive Bayes
 
@@ -48,7 +48,12 @@ classe — quase sempre falsa e, ainda assim, competitiva.
 **O algoritmo inteiro:** para classificar um ponto novo, encontre os $k$
 pontos de treino mais próximos (por alguma métrica de distância, tema 2) e
 vote pela classe majoritária entre eles (ou, em regressão, tire a média dos
-valores).
+valores). Não há nada além disso — a figura a seguir mostra o algoritmo
+inteiro em uma única imagem: um ponto novo (a estrela), o círculo que
+delimita seus $k=7$ vizinhos mais próximos, e a contagem de votos que decide
+a classe final.
+
+![k-NN com k=7: o ponto novo (estrela) é classificado pela maioria entre os 7 vizinhos mais próximos, delimitados pelo círculo tracejado.](figuras/knn-algoritmo.png)
 
 > [!DEFINICAO] k-NN é chamado de **lazy learner** (aprendiz preguiçoso): não
 > existe fase de "treino" que produza um modelo compacto — todo o trabalho
@@ -57,12 +62,29 @@ valores).
 > oposto de um modelo como regressão linear, que faz todo o trabalho pesado
 > no `fit` e o `predict` é uma simples multiplicação de matrizes.
 
+> [!MERCADO] Essa característica "preguiçosa" tem uma consequência real de
+> engenharia: um sistema de recomendação por similaridade (produtos
+> parecidos, usuários parecidos) que usa k-NN precisa manter **todo** o
+> catálogo em memória (ou numa estrutura de busca como um índice de
+> vizinhos aproximados) para responder em tempo real — diferente de um
+> modelo paramétrico, que pode ser exportado como um punhado de números e
+> rodar num celular sem conexão.
+
 ### Por que padronizar é obrigatório (revisão do tema 2 e 3)
 
 k-NN mede distância — e o tema 2 já mostrou que features em escalas
 diferentes distorcem qualquer cálculo de distância, deixando a feature de
 maior escala numérica dominar sozinha. Sem padronizar, k-NN na prática usa
 (quase) só a feature com maior variância numérica.
+
+Um exemplo concreto: comparando dois clientes com `idade` (variando de 20 a
+70) e `renda_mensal` (variando de 1.500 a 30.000), a distância euclidiana ao
+quadrado entre dois clientes é dominada quase inteiramente pela diferença de
+renda — uma diferença de 10 anos de idade (contribuição $10^2=100$) é
+irrelevante perto de uma diferença de R\$ 5.000 de renda (contribuição
+$5000^2 = 25\,000\,000$). Sem padronizar, o modelo efetivamente ignora
+idade por completo, não porque ela seja irrelevante, mas porque a unidade em
+que foi medida é "pequena" comparada à da renda.
 
 ### A maldição da dimensionalidade
 
@@ -90,6 +112,13 @@ maior escala numérica dominar sozinha. Sem padronizar, k-NN na prática usa
 > ainda assim pode ter erro de generalização alto. É o exemplo mais direto de
 > "erro de treino zero não significa modelo bom" do currículo inteiro.
 
+A figura a seguir mostra o mesmo dataset classificado com três valores de
+$k$: a fronteira de $k=1$ tem "ilhas" e reentrâncias que seguem cada ponto
+individual (inclusive ruído); a de $k=150$ é uma linha quase reta que ignora
+a curvatura real da fronteira; $k=15$ fica no equilíbrio.
+
+![k=1 produz uma fronteira irregular que memoriza cada ponto (alta variância); k=150 suaviza até quase virar uma reta (alto viés); k=15 fica no meio-termo.](figuras/efeito-de-k.png)
+
 ### k-NN ponderado e k-NN para regressão
 
 Em vez de um voto igualitário entre os $k$ vizinhos, pondera-se pelo inverso
@@ -111,7 +140,13 @@ $$P(x_1,\dots,x_p|y) \approx \prod_{j=1}^p P(x_j|y)$$
 
 — cada feature é condicionalmente independente das outras, dado $y$. Isso
 reduz o problema a estimar $p$ distribuições univariadas simples, uma por
-feature, em vez de uma distribuição conjunta complexa.
+feature, em vez de uma distribuição conjunta complexa. Para features
+contínuas (Gaussian NB), cada $P(x_j|y)$ é simplesmente uma normal ajustada
+com a média e o desvio-padrão daquela feature **dentro** de cada classe — a
+figura a seguir mostra exatamente essas duas curvas para uma única feature,
+com a fronteira de decisão exatamente onde elas se cruzam.
+
+![Cada classe tem sua própria curva de verossimilhança (já multiplicada pelo prior). Naive Bayes classifica pela curva mais alta em cada ponto — a fronteira de decisão é onde elas se cruzam.](figuras/naive-bayes-gaussiano.png)
 
 > [!ARMADILHA] Essa suposição é **quase sempre falsa**: `renda` e
 > `tempo_de_emprego`, por exemplo, tipicamente são correlacionadas mesmo
@@ -129,7 +164,7 @@ feature, em vez de uma distribuição conjunta complexa.
 
 ### As três variantes comuns
 
-| Variante | Assume que $P(x_j|y)$ é | Uso típico |
+| Variante | Assume que a distribuição de cada feature (dada a classe) é | Uso típico |
 |---|---|---|
 | Gaussian NB | Normal, por classe | Features contínuas |
 | Multinomial NB | Multinomial (contagens) | Contagens de palavras, bag-of-words (tema 9) |
@@ -150,6 +185,24 @@ evidência das outras features.
 > com $\alpha=1$ sendo o padrão clássico. Isso garante que nenhuma
 > probabilidade estimada seja exatamente zero, mesmo para combinações nunca
 > observadas no treino.
+
+Um exemplo concreto: um filtro de spam viu 200 e-mails legítimos no treino,
+e nenhum deles continha a palavra "criptomoeda". Sem suavização,
+$P(\text{"criptomoeda"}|\text{legítimo}) = 0$ — e qualquer e-mail legítimo
+novo que mencione criptomoeda (um funcionário do setor financeiro, por
+exemplo) seria classificado como spam com 100% de confiança, não importa o
+resto do conteúdo. Com $\alpha=1$ e um vocabulário de 5.000 palavras
+possíveis, a probabilidade estimada vira $1/(200+5000) \approx 0{,}0002$ —
+pequena, mas não nula, permitindo que outras palavras do e-mail ainda
+influenciem a decisão.
+
+> [!MERCADO] Filtros de spam foram, historicamente, a aplicação que tornou
+> Naive Bayes famoso fora da academia — rápido o suficiente para classificar
+> milhões de e-mails por segundo, com uma taxa de acerto competitiva mesmo
+> décadas antes de redes neurais serem práticas em produção. A mesma lógica
+> ainda sustenta classificadores de triagem de tickets, categorização de
+> produtos em e-commerce e detecção inicial de conteúdo tóxico, sempre como
+> baseline rápido antes de um modelo mais caro.
 
 ## Comparando os dois: onde cada um vence
 
