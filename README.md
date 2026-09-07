@@ -1,5 +1,7 @@
 # 📚 Machine Learning & Deep Learning
 
+> Uma trilha de estudos completa para virar cientista de dados — da primeira média aritmética até um modelo rodando em produção.
+
 ### 🧭 13 temas · 54 módulos · 142 notebooks-guia · 54 notebooks de exercícios
 
 Escrito para quem tem **Python intermediário** e **estatística superficial**. Nenhum conceito estatístico aparece sem ser construído do zero antes — se você não sabe o que é um desvio-padrão, comece pelo tema 1 e siga a ordem.

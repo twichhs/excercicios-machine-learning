@@ -345,6 +345,26 @@ def _bloco_colorido(conteudo, fundo, borda_esq=None, pad=7):
 LARGURA_UTIL = A4[0] - 2 * 2.3 * cm
 
 
+def _trunca_para_largura(canv, texto: str, largura_max: float,
+                          fonte: str, tamanho: float) -> str:
+    """Trunca `texto` com reticencias ate caber em `largura_max` pontos.
+
+    Usa a largura real renderizada (via stringWidth), nao um limite fixo de
+    caracteres -- necessario porque a fonte nao e monoespacada.
+    """
+    if canv.stringWidth(texto, fonte, tamanho) <= largura_max:
+        return texto
+    lo, hi = 0, len(texto)
+    while lo < hi:
+        meio = (lo + hi + 1) // 2
+        candidato = texto[:meio].rstrip() + "…"
+        if canv.stringWidth(candidato, fonte, tamanho) <= largura_max:
+            lo = meio
+        else:
+            hi = meio - 1
+    return (texto[:lo].rstrip() + "…") if lo > 0 else "…"
+
+
 class ImagemFormula(RLImage):
     """Formula em display, centralizada e reduzida se estourar a margem."""
 
@@ -667,13 +687,22 @@ class DocumentoCurso(BaseDocTemplate):
 
     def _moldura(self, canv, doc):
         canv.saveState()
-        tema = self.doc_md.meta.get("tema", "")
+        tema = self.doc_md.meta.get("tema", "").upper()
+        titulo = self.doc_md.titulo
         canv.setFont("DejaVu", 7.6)
         canv.setFillColor(CINZA_MEDIO)
-        canv.drawString(MARGEM, A4[1] - TOPO + 0.62 * cm,
-                        tema.upper()[:78])
-        canv.drawRightString(A4[0] - MARGEM, A4[1] - TOPO + 0.62 * cm,
-                             self.doc_md.titulo[:60])
+        # os dois textos do cabecalho nao podem se sobrepor: o titulo (a
+        # direita) reserva no maximo metade da largura util, e o tema (a
+        # esquerda) trunca no que sobrar -- em vez de um limite fixo de
+        # caracteres, que nao sabe quao largo cada caractere realmente e.
+        gap = 22
+        titulo_max = LARGURA_UTIL * 0.5
+        titulo_trunc = _trunca_para_largura(canv, titulo, titulo_max, "DejaVu", 7.6)
+        titulo_largura = canv.stringWidth(titulo_trunc, "DejaVu", 7.6)
+        tema_max = LARGURA_UTIL - titulo_largura - gap
+        tema_trunc = _trunca_para_largura(canv, tema, tema_max, "DejaVu", 7.6)
+        canv.drawString(MARGEM, A4[1] - TOPO + 0.62 * cm, tema_trunc)
+        canv.drawRightString(A4[0] - MARGEM, A4[1] - TOPO + 0.62 * cm, titulo_trunc)
         canv.setStrokeColor(CINZA_LINHA)
         canv.setLineWidth(0.5)
         canv.line(MARGEM, A4[1] - TOPO + 0.42 * cm,
