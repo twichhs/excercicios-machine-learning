@@ -10,9 +10,9 @@
 
 | # | Módulo | O que você vai aprender |
 | :-: | :-- | :-- |
-| **1** | **[Fundamentos e Estacionariedade](01-fundamentos-e-estacionariedade/teoria.pdf)** | Tendência, sazonalidade, autocorrelação, decomposição e os testes de raiz unitária. |
-| **2** | **[ARIMA, SARIMA e Suavização Exponencial](02-modelos-classicos/teoria.pdf)** | A família Box-Jenkins e os modelos de espaço de estados que ainda vencem baselines em produção. |
-| **3** | **[Machine Learning para Séries Temporais](03-ml-para-series-temporais/teoria.pdf)** | Transformar previsão em problema supervisionado: janelas, features de defasagem e validação com origem móvel. |
+| **1** | **[Fundamentos e Estacionariedade](01-fundamentos-e-estacionariedade/01-decomposicao-e-acf.ipynb)** | Tendência, sazonalidade, autocorrelação, decomposição e os testes de raiz unitária. |
+| **2** | **[ARIMA, SARIMA e Suavização Exponencial](02-modelos-classicos/01-arima.ipynb)** | A família Box-Jenkins e os modelos de espaço de estados que ainda vencem baselines em produção. |
+| **3** | **[Machine Learning para Séries Temporais](03-ml-para-series-temporais/01-features-de-defasagem.ipynb)** | Transformar previsão em problema supervisionado: janelas, features de defasagem e validação com origem móvel. |
 
 ---
 
@@ -20,9 +20,9 @@
 
 | Módulo | 📕 Teoria | 💻 Notebooks-guia | ✏️ Prática |
 | :-- | :-: | :-- | :-: |
-| Fundamentos e Estacionariedade | [PDF](01-fundamentos-e-estacionariedade/teoria.pdf) | [1](01-fundamentos-e-estacionariedade/01-decomposicao-e-acf.ipynb) · [2](01-fundamentos-e-estacionariedade/02-estacionariedade.ipynb) | [abrir](01-fundamentos-e-estacionariedade/99-exercicios.ipynb) |
-| ARIMA, SARIMA e Suavização Exponencial | [PDF](02-modelos-classicos/teoria.pdf) | [1](02-modelos-classicos/01-arima.ipynb) · [2](02-modelos-classicos/02-sazonalidade-e-sarimax.ipynb) · [3](02-modelos-classicos/03-suavizacao-exponencial.ipynb) | [abrir](02-modelos-classicos/99-exercicios.ipynb) |
-| Machine Learning para Séries Temporais | [PDF](03-ml-para-series-temporais/teoria.pdf) | [1](03-ml-para-series-temporais/01-features-de-defasagem.ipynb) · [2](03-ml-para-series-temporais/02-validacao-temporal.ipynb) · [3](03-ml-para-series-temporais/03-caso-real-demanda.ipynb) | [abrir](03-ml-para-series-temporais/99-exercicios.ipynb) |
+| Fundamentos e Estacionariedade | embutida nos notebooks | [1](01-fundamentos-e-estacionariedade/01-decomposicao-e-acf.ipynb) · [2](01-fundamentos-e-estacionariedade/02-estacionariedade.ipynb) | [abrir](01-fundamentos-e-estacionariedade/99-exercicios.ipynb) |
+| ARIMA, SARIMA e Suavização Exponencial | embutida nos notebooks | [1](02-modelos-classicos/01-arima.ipynb) · [2](02-modelos-classicos/02-sazonalidade-e-sarimax.ipynb) · [3](02-modelos-classicos/03-suavizacao-exponencial.ipynb) | [abrir](02-modelos-classicos/99-exercicios.ipynb) |
+| Machine Learning para Séries Temporais | embutida nos notebooks | [1](03-ml-para-series-temporais/01-features-de-defasagem.ipynb) · [2](03-ml-para-series-temporais/02-validacao-temporal.ipynb) · [3](03-ml-para-series-temporais/03-caso-real-demanda.ipynb) | [abrir](03-ml-para-series-temporais/99-exercicios.ipynb) |
 
 ---
 

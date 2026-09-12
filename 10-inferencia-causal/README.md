@@ -10,9 +10,9 @@
 
 | # | Módulo | O que você vai aprender |
 | :-: | :-- | :-- |
-| **1** | **[Fundamentos de Causalidade](01-fundamentos-de-causalidade/teoria.pdf)** | Resultados potenciais, confundimento, DAGs, o critério de porta dos fundos e o paradoxo de Simpson. |
-| **2** | **[Métodos Quase-Experimentais](02-metodos-quase-experimentais/teoria.pdf)** | Pareamento, escore de propensão, diferenças-em-diferenças e variáveis instrumentais quando o A/B é impossível. |
-| **3** | **[Uplift Modeling](03-uplift-modeling/teoria.pdf)** | Prever o efeito incremental do tratamento por indivíduo — a diferença entre prever churn e evitar churn. |
+| **1** | **[Fundamentos de Causalidade](01-fundamentos-de-causalidade/01-resultados-potenciais.ipynb)** | Resultados potenciais, confundimento, DAGs, o critério de porta dos fundos e o paradoxo de Simpson. |
+| **2** | **[Métodos Quase-Experimentais](02-metodos-quase-experimentais/01-propensity-score.ipynb)** | Pareamento, escore de propensão, diferenças-em-diferenças e variáveis instrumentais quando o A/B é impossível. |
+| **3** | **[Uplift Modeling](03-uplift-modeling/01-efeito-heterogeneo.ipynb)** | Prever o efeito incremental do tratamento por indivíduo — a diferença entre prever churn e evitar churn. |
 
 ---
 
@@ -20,9 +20,9 @@
 
 | Módulo | 📕 Teoria | 💻 Notebooks-guia | ✏️ Prática |
 | :-- | :-: | :-- | :-: |
-| Fundamentos de Causalidade | [PDF](01-fundamentos-de-causalidade/teoria.pdf) | [1](01-fundamentos-de-causalidade/01-resultados-potenciais.ipynb) · [2](01-fundamentos-de-causalidade/02-dags-e-vies-de-colisor.ipynb) | [abrir](01-fundamentos-de-causalidade/99-exercicios.ipynb) |
-| Métodos Quase-Experimentais | [PDF](02-metodos-quase-experimentais/teoria.pdf) | [1](02-metodos-quase-experimentais/01-propensity-score.ipynb) · [2](02-metodos-quase-experimentais/02-diferencas-em-diferencas.ipynb) · [3](02-metodos-quase-experimentais/03-variaveis-instrumentais.ipynb) | [abrir](02-metodos-quase-experimentais/99-exercicios.ipynb) |
-| Uplift Modeling | [PDF](03-uplift-modeling/teoria.pdf) | [1](03-uplift-modeling/01-efeito-heterogeneo.ipynb) · [2](03-uplift-modeling/02-modelos-de-uplift.ipynb) | [abrir](03-uplift-modeling/99-exercicios.ipynb) |
+| Fundamentos de Causalidade | embutida nos notebooks | [1](01-fundamentos-de-causalidade/01-resultados-potenciais.ipynb) · [2](01-fundamentos-de-causalidade/02-dags-e-vies-de-colisor.ipynb) | [abrir](01-fundamentos-de-causalidade/99-exercicios.ipynb) |
+| Métodos Quase-Experimentais | embutida nos notebooks | [1](02-metodos-quase-experimentais/01-propensity-score.ipynb) · [2](02-metodos-quase-experimentais/02-diferencas-em-diferencas.ipynb) · [3](02-metodos-quase-experimentais/03-variaveis-instrumentais.ipynb) | [abrir](02-metodos-quase-experimentais/99-exercicios.ipynb) |
+| Uplift Modeling | embutida nos notebooks | [1](03-uplift-modeling/01-efeito-heterogeneo.ipynb) · [2](03-uplift-modeling/02-modelos-de-uplift.ipynb) | [abrir](03-uplift-modeling/99-exercicios.ipynb) |
 
 ---
 

@@ -73,6 +73,27 @@ def _celula(texto: str) -> str:
     return texto.replace("|", "\\|").replace("\n", " ")
 
 
+# A partir de um certo ponto da trilha, módulos novos não têm mais
+# teoria.md/teoria.pdf: a teoria (conceitos, analogias, contexto de mercado)
+# passou a viver dentro dos próprios notebooks-guia, junto com o código e um
+# exemplo visual de parâmetros expostos para o aluno alterar. As duas funções
+# abaixo decidem, olhando o disco, se um módulo é "com PDF" (formato antigo)
+# ou "só notebook" (formato novo) — sem exigir nenhum campo novo em Modulo.
+def _tem_pdf(tema, modulo) -> bool:
+    return (RAIZ / tema.slug / modulo.slug / "teoria.pdf").exists()
+
+
+def _primeiro_notebook(modulo) -> str:
+    return next((s for s, _ in modulo.notebooks if s != "99-exercicios"), "")
+
+
+def _link_titulo_modulo(tema, m) -> str:
+    if _tem_pdf(tema, m):
+        return f"**[{m.titulo}]({m.slug}/teoria.pdf)**"
+    primeiro = _primeiro_notebook(m)
+    return f"**[{m.titulo}]({m.slug}/{primeiro}.ipynb)**" if primeiro else f"**{m.titulo}**"
+
+
 def _readme_tema(tema) -> None:
     emoji = EMOJI_TEMA.get(tema.slug, "📁")
     linhas = [
@@ -86,7 +107,7 @@ def _readme_tema(tema) -> None:
         "| :-: | :-- | :-- |",
     ]
     for k, m in enumerate(tema.modulos, start=1):
-        linhas.append(f"| **{k}** | **[{m.titulo}]({m.slug}/teoria.pdf)** "
+        linhas.append(f"| **{k}** | {_link_titulo_modulo(tema, m)} "
                       f"| {_celula(m.resumo)} |")
 
     linhas += ["", "---", "", "## 🗂️ Arquivos de cada módulo", "",
@@ -95,8 +116,10 @@ def _readme_tema(tema) -> None:
     for m in tema.modulos:
         guias = [s for s, _ in m.notebooks if s != "99-exercicios"]
         nbs = " · ".join(f"[{k + 1}]({m.slug}/{s}.ipynb)" for k, s in enumerate(guias))
+        teoria_cel = (f"[PDF]({m.slug}/teoria.pdf)" if _tem_pdf(tema, m)
+                      else "embutida nos notebooks")
         linhas.append(
-            f"| {m.titulo} | [PDF]({m.slug}/teoria.pdf) | {nbs} "
+            f"| {m.titulo} | {teoria_cel} | {nbs} "
             f"| [abrir]({m.slug}/99-exercicios.ipynb) |")
 
     linhas += [
@@ -146,20 +169,28 @@ def _readme_raiz() -> None:
         "## 🗂️ O que tem dentro de cada módulo", "",
         "| Arquivo | O que é | Como usar |",
         "| :-- | :-- | :-- |",
-        "| 📕 `teoria.pdf` | O material denso: conceitos, fórmulas, analogias e "
-        "aplicações reais de mercado. | Leia um capítulo por vez, sem pressa. |",
-        "| 💻 `01-*.ipynb`, `02-*.ipynb`… | Notebooks-guia, muito comentados e já "
-        "com as saídas embutidas. | Rode, mude os parâmetros, veja o que muda. |",
+        "| 📕 `teoria.pdf` *(módulos mais antigos)* | O material denso: "
+        "conceitos, fórmulas, analogias e aplicações reais de mercado. | Leia "
+        "um capítulo por vez, sem pressa. |",
+        "| 💻 `01-*.ipynb`, `02-*.ipynb`… | Notebooks-guia — já trazem a teoria "
+        "embutida em células markdown (analogias, contexto de mercado, "
+        "fórmulas), o código e um exemplo visual com parâmetros expostos para "
+        "você alterar. Vêm com as saídas prontas. | Rode, mude os parâmetros no "
+        "topo da célula, rode de novo, veja o que muda. |",
         "| ✏️ `99-exercicios.ipynb` | Exercícios do módulo, com gabarito "
         "comentado logo abaixo de cada um. | Resolva **antes** de olhar a "
         "resposta. |",
-        "| 📝 `teoria.md` | A fonte de onde o PDF é gerado. | Só interessa se "
-        "você for editar o material. |",
+        "| 📝 `teoria.md` *(módulos mais antigos)* | A fonte de onde o PDF é "
+        "gerado. | Só interessa se você for editar o material. |",
         "", "",
+        "> 💡 A partir de **Viés e Variância** (tema 6), os módulos novos não "
+        "têm mais `teoria.pdf`: a teoria mora dentro dos próprios "
+        "notebooks-guia, ao lado do código que a demonstra. Os módulos mais "
+        "antigos continuam com os dois formatos, sem mudança.", "",
         "> 💡 **Como saber se entendeu?** Se você consegue resolver o "
         "`99-exercicios` sem olhar o gabarito, entendeu. Se não consegue, volte "
-        "ao PDF — não adianta seguir em frente, porque o próximo módulo assume "
-        "este.", "",
+        "à teoria (PDF ou notebook-guia) — não adianta seguir em frente, "
+        "porque o próximo módulo assume este.", "",
         "> 🟢 🟡 🔴 Os exercícios são marcados por dificuldade: **base**, "
         "**aplicação** e **síntese**. Se o tempo estiver curto, faça os 🟢 e 🟡 "
         "de todos os módulos antes de voltar aos 🔴.", "",
@@ -175,8 +206,9 @@ def _readme_raiz() -> None:
             "| :-- | :-- |",
         ]
         for m in tema.modulos:
-            linhas.append(f"| **[{m.titulo}]({tema.slug}/{m.slug}/teoria.pdf)** "
-                          f"| {_celula(m.resumo)} |")
+            link = _link_titulo_modulo(tema, m).replace(f"({m.slug}/",
+                                                         f"({tema.slug}/{m.slug}/")
+            linhas.append(f"| {link} | {_celula(m.resumo)} |")
         linhas += ["", f"📂 **[Abrir o tema completo]({tema.slug}/README.md)**", "",
                    "---", ""]
 

@@ -44,13 +44,15 @@ jupyter lab
 
 | Arquivo | O que é | Como usar |
 | :-- | :-- | :-- |
-| 📕 `teoria.pdf` | O material denso: conceitos, fórmulas, analogias e aplicações reais de mercado. | Leia um capítulo por vez, sem pressa. |
-| 💻 `01-*.ipynb`, `02-*.ipynb`… | Notebooks-guia, muito comentados e já com as saídas embutidas. | Rode, mude os parâmetros, veja o que muda. |
+| 📕 `teoria.pdf` *(módulos mais antigos)* | O material denso: conceitos, fórmulas, analogias e aplicações reais de mercado. | Leia um capítulo por vez, sem pressa. |
+| 💻 `01-*.ipynb`, `02-*.ipynb`… | Notebooks-guia — já trazem a teoria embutida em células markdown (analogias, contexto de mercado, fórmulas), o código e um exemplo visual com parâmetros expostos para você alterar. Vêm com as saídas prontas. | Rode, mude os parâmetros no topo da célula, rode de novo, veja o que muda. |
 | ✏️ `99-exercicios.ipynb` | Exercícios do módulo, com gabarito comentado logo abaixo de cada um. | Resolva **antes** de olhar a resposta. |
-| 📝 `teoria.md` | A fonte de onde o PDF é gerado. | Só interessa se você for editar o material. |
+| 📝 `teoria.md` *(módulos mais antigos)* | A fonte de onde o PDF é gerado. | Só interessa se você for editar o material. |
 
 
-> 💡 **Como saber se entendeu?** Se você consegue resolver o `99-exercicios` sem olhar o gabarito, entendeu. Se não consegue, volte ao PDF — não adianta seguir em frente, porque o próximo módulo assume este.
+> 💡 A partir de **Viés e Variância** (tema 6), os módulos novos não têm mais `teoria.pdf`: a teoria mora dentro dos próprios notebooks-guia, ao lado do código que a demonstra. Os módulos mais antigos continuam com os dois formatos, sem mudança.
+
+> 💡 **Como saber se entendeu?** Se você consegue resolver o `99-exercicios` sem olhar o gabarito, entendeu. Se não consegue, volte à teoria (PDF ou notebook-guia) — não adianta seguir em frente, porque o próximo módulo assume este.
 
 > 🟢 🟡 🔴 Os exercícios são marcados por dificuldade: **base**, **aplicação** e **síntese**. Se o tempo estiver curto, faça os 🟢 e 🟡 de todos os módulos antes de voltar aos 🔴.
 
@@ -147,9 +149,9 @@ jupyter lab
 | **[Métricas de Classificação](06-avaliacao-e-validacao/01-metricas-de-classificacao/teoria.pdf)** | Matriz de confusão, precisão, recall, F1, ROC-AUC, PR-AUC e como escolher a métrica a partir do custo do erro. |
 | **[Métricas de Regressão](06-avaliacao-e-validacao/02-metricas-de-regressao/teoria.pdf)** | MAE, RMSE, MAPE, R² e quantis — cada uma otimiza um comportamento diferente do modelo. |
 | **[Validação Cruzada](06-avaliacao-e-validacao/03-validacao-cruzada/teoria.pdf)** | k-fold, estratificado, por grupo e temporal — e o vazamento sutil que infla o resultado de quase todo notebook. |
-| **[Viés, Variância e Curvas de Aprendizado](06-avaliacao-e-validacao/04-vies-variancia/teoria.pdf)** | A decomposição do erro, curvas de aprendizado e de complexidade como ferramenta de diagnóstico. |
-| **[Calibração de Probabilidades](06-avaliacao-e-validacao/05-calibracao-de-probabilidades/teoria.pdf)** | Quando 0,8 precisa mesmo significar 80%: Platt, isotônica, Brier score e diagramas de confiabilidade. |
-| **[Otimização de Hiperparâmetros](06-avaliacao-e-validacao/06-otimizacao-de-hiperparametros/teoria.pdf)** | Grid, random, otimização bayesiana e Hyperband — com o orçamento computacional como restrição de projeto. |
+| **[Viés, Variância e Curvas de Aprendizado](06-avaliacao-e-validacao/04-vies-variancia/01-decomposicao-do-erro.ipynb)** | A decomposição do erro, curvas de aprendizado e de complexidade como ferramenta de diagnóstico. |
+| **[Calibração de Probabilidades](06-avaliacao-e-validacao/05-calibracao-de-probabilidades/01-por-que-calibrar.ipynb)** | Quando 0,8 precisa mesmo significar 80%: Platt, isotônica, Brier score e diagramas de confiabilidade. |
+| **[Otimização de Hiperparâmetros](06-avaliacao-e-validacao/06-otimizacao-de-hiperparametros/01-grid-e-random-search.ipynb)** | Grid, random, otimização bayesiana e Hyperband — com o orçamento computacional como restrição de projeto. |
 
 📂 **[Abrir o tema completo](06-avaliacao-e-validacao/README.md)**
 
@@ -161,9 +163,9 @@ jupyter lab
 
 | Módulo | O que você vai aprender |
 | :-- | :-- |
-| **[Fundamentos e Estacionariedade](07-series-temporais/01-fundamentos-e-estacionariedade/teoria.pdf)** | Tendência, sazonalidade, autocorrelação, decomposição e os testes de raiz unitária. |
-| **[ARIMA, SARIMA e Suavização Exponencial](07-series-temporais/02-modelos-classicos/teoria.pdf)** | A família Box-Jenkins e os modelos de espaço de estados que ainda vencem baselines em produção. |
-| **[Machine Learning para Séries Temporais](07-series-temporais/03-ml-para-series-temporais/teoria.pdf)** | Transformar previsão em problema supervisionado: janelas, features de defasagem e validação com origem móvel. |
+| **[Fundamentos e Estacionariedade](07-series-temporais/01-fundamentos-e-estacionariedade/01-decomposicao-e-acf.ipynb)** | Tendência, sazonalidade, autocorrelação, decomposição e os testes de raiz unitária. |
+| **[ARIMA, SARIMA e Suavização Exponencial](07-series-temporais/02-modelos-classicos/01-arima.ipynb)** | A família Box-Jenkins e os modelos de espaço de estados que ainda vencem baselines em produção. |
+| **[Machine Learning para Séries Temporais](07-series-temporais/03-ml-para-series-temporais/01-features-de-defasagem.ipynb)** | Transformar previsão em problema supervisionado: janelas, features de defasagem e validação com origem móvel. |
 
 📂 **[Abrir o tema completo](07-series-temporais/README.md)**
 
@@ -175,13 +177,13 @@ jupyter lab
 
 | Módulo | O que você vai aprender |
 | :-- | :-- |
-| **[Fundamentos de Redes Neurais](08-deep-learning/01-fundamentos-de-redes-neurais/teoria.pdf)** | Perceptron, funções de ativação, a rede densa como composição de funções e o teorema da aproximação universal. |
-| **[Backpropagation](08-deep-learning/02-backpropagation/teoria.pdf)** | A regra da cadeia como grafo computacional: derivar, implementar e depurar o algoritmo que treina tudo. |
-| **[Treinamento, Otimizadores e Regularização](08-deep-learning/03-treinamento-e-regularizacao/teoria.pdf)** | SGD, momentum, Adam, agendadores de taxa, dropout, batch norm, early stopping e o diagnóstico de um treino que trava. |
-| **[Redes Convolucionais](08-deep-learning/04-redes-convolucionais/teoria.pdf)** | Convolução, campo receptivo, pooling e as arquiteturas que resolveram visão computacional. |
-| **[Modelos Sequenciais: RNN, LSTM e GRU](08-deep-learning/05-modelos-sequenciais/teoria.pdf)** | Memória, gradientes que desaparecem e as portas que resolveram o problema — com aplicação em séries e texto. |
-| **[Atenção e Transformers](08-deep-learning/06-atencao-e-transformers/teoria.pdf)** | Self-attention, multi-head, codificação posicional e a arquitetura que redefiniu a área inteira. |
-| **[Embeddings e Transfer Learning](08-deep-learning/07-embeddings-e-transferencia/teoria.pdf)** | Representações densas, similaridade vetorial, fine-tuning e a economia de reaproveitar modelos pré-treinados. |
+| **[Fundamentos de Redes Neurais](08-deep-learning/01-fundamentos-de-redes-neurais/01-perceptron.ipynb)** | Perceptron, funções de ativação, a rede densa como composição de funções e o teorema da aproximação universal. |
+| **[Backpropagation](08-deep-learning/02-backpropagation/01-regra-da-cadeia-e-grafo.ipynb)** | A regra da cadeia como grafo computacional: derivar, implementar e depurar o algoritmo que treina tudo. |
+| **[Treinamento, Otimizadores e Regularização](08-deep-learning/03-treinamento-e-regularizacao/01-otimizadores.ipynb)** | SGD, momentum, Adam, agendadores de taxa, dropout, batch norm, early stopping e o diagnóstico de um treino que trava. |
+| **[Redes Convolucionais](08-deep-learning/04-redes-convolucionais/01-convolucao-na-mao.ipynb)** | Convolução, campo receptivo, pooling e as arquiteturas que resolveram visão computacional. |
+| **[Modelos Sequenciais: RNN, LSTM e GRU](08-deep-learning/05-modelos-sequenciais/01-rnn-do-zero.ipynb)** | Memória, gradientes que desaparecem e as portas que resolveram o problema — com aplicação em séries e texto. |
+| **[Atenção e Transformers](08-deep-learning/06-atencao-e-transformers/01-atencao-do-zero.ipynb)** | Self-attention, multi-head, codificação posicional e a arquitetura que redefiniu a área inteira. |
+| **[Embeddings e Transfer Learning](08-deep-learning/07-embeddings-e-transferencia/01-embeddings.ipynb)** | Representações densas, similaridade vetorial, fine-tuning e a economia de reaproveitar modelos pré-treinados. |
 
 📂 **[Abrir o tema completo](08-deep-learning/README.md)**
 
@@ -193,9 +195,9 @@ jupyter lab
 
 | Módulo | O que você vai aprender |
 | :-- | :-- |
-| **[Representação de Texto](09-nlp-e-llms/01-representacao-de-texto/teoria.pdf)** | Tokenização, normalização, bag-of-words, TF-IDF, n-gramas e embeddings estáticos. |
-| **[Classificação de Texto e Tópicos](09-nlp-e-llms/02-classificacao-e-topicos/teoria.pdf)** | Pipelines de classificação, análise de sentimento e modelagem de tópicos com NMF e LDA. |
-| **[LLMs, RAG e Avaliação](09-nlp-e-llms/03-llms-rag-e-avaliacao/teoria.pdf)** | Como um LLM gera texto, o que é RAG, engenharia de contexto e como avaliar sistemas generativos sem se enganar. |
+| **[Representação de Texto](09-nlp-e-llms/01-representacao-de-texto/01-tokenizacao-e-bow.ipynb)** | Tokenização, normalização, bag-of-words, TF-IDF, n-gramas e embeddings estáticos. |
+| **[Classificação de Texto e Tópicos](09-nlp-e-llms/02-classificacao-e-topicos/01-classificacao-de-texto.ipynb)** | Pipelines de classificação, análise de sentimento e modelagem de tópicos com NMF e LDA. |
+| **[LLMs, RAG e Avaliação](09-nlp-e-llms/03-llms-rag-e-avaliacao/01-como-um-llm-gera-texto.ipynb)** | Como um LLM gera texto, o que é RAG, engenharia de contexto e como avaliar sistemas generativos sem se enganar. |
 
 📂 **[Abrir o tema completo](09-nlp-e-llms/README.md)**
 
@@ -207,9 +209,9 @@ jupyter lab
 
 | Módulo | O que você vai aprender |
 | :-- | :-- |
-| **[Fundamentos de Causalidade](10-inferencia-causal/01-fundamentos-de-causalidade/teoria.pdf)** | Resultados potenciais, confundimento, DAGs, o critério de porta dos fundos e o paradoxo de Simpson. |
-| **[Métodos Quase-Experimentais](10-inferencia-causal/02-metodos-quase-experimentais/teoria.pdf)** | Pareamento, escore de propensão, diferenças-em-diferenças e variáveis instrumentais quando o A/B é impossível. |
-| **[Uplift Modeling](10-inferencia-causal/03-uplift-modeling/teoria.pdf)** | Prever o efeito incremental do tratamento por indivíduo — a diferença entre prever churn e evitar churn. |
+| **[Fundamentos de Causalidade](10-inferencia-causal/01-fundamentos-de-causalidade/01-resultados-potenciais.ipynb)** | Resultados potenciais, confundimento, DAGs, o critério de porta dos fundos e o paradoxo de Simpson. |
+| **[Métodos Quase-Experimentais](10-inferencia-causal/02-metodos-quase-experimentais/01-propensity-score.ipynb)** | Pareamento, escore de propensão, diferenças-em-diferenças e variáveis instrumentais quando o A/B é impossível. |
+| **[Uplift Modeling](10-inferencia-causal/03-uplift-modeling/01-efeito-heterogeneo.ipynb)** | Prever o efeito incremental do tratamento por indivíduo — a diferença entre prever churn e evitar churn. |
 
 📂 **[Abrir o tema completo](10-inferencia-causal/README.md)**
 
@@ -221,8 +223,8 @@ jupyter lab
 
 | Módulo | O que você vai aprender |
 | :-- | :-- |
-| **[Interpretabilidade de Modelos](11-interpretabilidade-e-fairness/01-interpretabilidade/teoria.pdf)** | Importância por permutação, PDP, ICE, LIME e SHAP — o que cada método realmente responde. |
-| **[Fairness e Viés Algorítmico](11-interpretabilidade-e-fairness/02-fairness-e-vies/teoria.pdf)** | Definições concorrentes de justiça, sua incompatibilidade matemática e técnicas de mitigação. |
+| **[Interpretabilidade de Modelos](11-interpretabilidade-e-fairness/01-interpretabilidade/01-importancia-e-pdp.ipynb)** | Importância por permutação, PDP, ICE, LIME e SHAP — o que cada método realmente responde. |
+| **[Fairness e Viés Algorítmico](11-interpretabilidade-e-fairness/02-fairness-e-vies/01-metricas-de-fairness.ipynb)** | Definições concorrentes de justiça, sua incompatibilidade matemática e técnicas de mitigação. |
 
 📂 **[Abrir o tema completo](11-interpretabilidade-e-fairness/README.md)**
 
@@ -234,8 +236,8 @@ jupyter lab
 
 | Módulo | O que você vai aprender |
 | :-- | :-- |
-| **[Filtragem Colaborativa](12-sistemas-de-recomendacao/01-filtragem-colaborativa/teoria.pdf)** | Vizinhança usuário-item, fatoração de matrizes, ALS e o problema da partida a frio. |
-| **[Avaliação e Modelos Híbridos](12-sistemas-de-recomendacao/02-avaliacao-e-hibridos/teoria.pdf)** | Métricas de ranking, viés de popularidade, diversidade e arquiteturas híbridas de duas torres. |
+| **[Filtragem Colaborativa](12-sistemas-de-recomendacao/01-filtragem-colaborativa/01-vizinhanca.ipynb)** | Vizinhança usuário-item, fatoração de matrizes, ALS e o problema da partida a frio. |
+| **[Avaliação e Modelos Híbridos](12-sistemas-de-recomendacao/02-avaliacao-e-hibridos/01-metricas-de-ranking.ipynb)** | Métricas de ranking, viés de popularidade, diversidade e arquiteturas híbridas de duas torres. |
 
 📂 **[Abrir o tema completo](12-sistemas-de-recomendacao/README.md)**
 
@@ -247,9 +249,9 @@ jupyter lab
 
 | Módulo | O que você vai aprender |
 | :-- | :-- |
-| **[Pipelines e Reprodutibilidade](13-mlops-e-producao/01-pipelines-e-reprodutibilidade/teoria.pdf)** | Pipelines do scikit-learn, versionamento de dados e modelos, seeds e o registro de experimentos. |
-| **[Deploy e Monitoramento](13-mlops-e-producao/02-deploy-e-monitoramento/teoria.pdf)** | Batch vs online, feature store, contrato de dados, latência e o que instrumentar antes de ir para produção. |
-| **[Data Drift e Retreino](13-mlops-e-producao/03-drift-e-retreino/teoria.pdf)** | Drift de covariáveis, de conceito e de rótulo; testes estatísticos de detecção e políticas de retreino. |
+| **[Pipelines e Reprodutibilidade](13-mlops-e-producao/01-pipelines-e-reprodutibilidade/01-pipelines-robustos.ipynb)** | Pipelines do scikit-learn, versionamento de dados e modelos, seeds e o registro de experimentos. |
+| **[Deploy e Monitoramento](13-mlops-e-producao/02-deploy-e-monitoramento/01-servindo-um-modelo.ipynb)** | Batch vs online, feature store, contrato de dados, latência e o que instrumentar antes de ir para produção. |
+| **[Data Drift e Retreino](13-mlops-e-producao/03-drift-e-retreino/01-deteccao-de-drift.ipynb)** | Drift de covariáveis, de conceito e de rótulo; testes estatísticos de detecção e políticas de retreino. |
 
 📂 **[Abrir o tema completo](13-mlops-e-producao/README.md)**
 

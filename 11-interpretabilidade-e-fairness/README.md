@@ -10,8 +10,8 @@
 
 | # | Módulo | O que você vai aprender |
 | :-: | :-- | :-- |
-| **1** | **[Interpretabilidade de Modelos](01-interpretabilidade/teoria.pdf)** | Importância por permutação, PDP, ICE, LIME e SHAP — o que cada método realmente responde. |
-| **2** | **[Fairness e Viés Algorítmico](02-fairness-e-vies/teoria.pdf)** | Definições concorrentes de justiça, sua incompatibilidade matemática e técnicas de mitigação. |
+| **1** | **[Interpretabilidade de Modelos](01-interpretabilidade/01-importancia-e-pdp.ipynb)** | Importância por permutação, PDP, ICE, LIME e SHAP — o que cada método realmente responde. |
+| **2** | **[Fairness e Viés Algorítmico](02-fairness-e-vies/01-metricas-de-fairness.ipynb)** | Definições concorrentes de justiça, sua incompatibilidade matemática e técnicas de mitigação. |
 
 ---
 
@@ -19,8 +19,8 @@
 
 | Módulo | 📕 Teoria | 💻 Notebooks-guia | ✏️ Prática |
 | :-- | :-: | :-- | :-: |
-| Interpretabilidade de Modelos | [PDF](01-interpretabilidade/teoria.pdf) | [1](01-interpretabilidade/01-importancia-e-pdp.ipynb) · [2](01-interpretabilidade/02-shap.ipynb) · [3](01-interpretabilidade/03-lime-e-explicacoes-locais.ipynb) | [abrir](01-interpretabilidade/99-exercicios.ipynb) |
-| Fairness e Viés Algorítmico | [PDF](02-fairness-e-vies/teoria.pdf) | [1](02-fairness-e-vies/01-metricas-de-fairness.ipynb) · [2](02-fairness-e-vies/02-mitigacao-de-vies.ipynb) | [abrir](02-fairness-e-vies/99-exercicios.ipynb) |
+| Interpretabilidade de Modelos | embutida nos notebooks | [1](01-interpretabilidade/01-importancia-e-pdp.ipynb) · [2](01-interpretabilidade/02-shap.ipynb) · [3](01-interpretabilidade/03-lime-e-explicacoes-locais.ipynb) | [abrir](01-interpretabilidade/99-exercicios.ipynb) |
+| Fairness e Viés Algorítmico | embutida nos notebooks | [1](02-fairness-e-vies/01-metricas-de-fairness.ipynb) · [2](02-fairness-e-vies/02-mitigacao-de-vies.ipynb) | [abrir](02-fairness-e-vies/99-exercicios.ipynb) |
 
 ---
 
